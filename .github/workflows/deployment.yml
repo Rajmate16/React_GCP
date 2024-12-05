@@ -30,7 +30,7 @@ jobs:
 
     - name: Initialize Amplify Project (if needed)
       run: |
-        # amplify init --amplify "{\n  \"projectName\": \"your-app-name\",\n  \"envName\": \"prod\",\n  \"defaultEditor\": \"code\"\n}" --yes  # Initialize if not already done
+        amplify init --amplify "{\n  \"projectName\": \"your-app-name\",\n  \"envName\": \"prod\",\n  \"defaultEditor\": \"code\"\n}" --yes  # Initialize if not already done
         amplify pull --appId ${{ secrets.AMPLIFY_APP_ID }} --envName ${{ secrets.AMPLIFY_BRANCH }} --yes  # Pull existing project if necessary
 
     - name: Deploy to AWS Amplify

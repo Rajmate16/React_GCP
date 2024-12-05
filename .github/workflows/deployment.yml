@@ -47,7 +47,7 @@ jobs:
     - name: Initialize Amplify Project
       run: |
         amplify init --yes --region $AWS_REGION \
-          --project-name your-app-name \
+          --project-name NewApp \
           --env prod \
           --default-editor code
 

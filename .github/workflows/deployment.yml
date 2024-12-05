@@ -32,6 +32,24 @@ jobs:
       
             - name: Verify Amplify CLI Version
               run: amplify --version
+
+
+            - name: Verify Amplify CLI Version
+              run: amplify --version  # Verify Amplify CLI version
+      
+            - name: Install dependencies
+              run: yarn install  # Install project dependencies
+      
+            - name: Lint
+              run: yarn lint  # Lint the code
+      
+            - name: Test
+              run: yarn test:ci  # Run tests
+              env:
+                CI: true
+      
+            - name: Build
+              run: yarn build  # Build the project  
       
             - name: Configure Amplify
               run: |

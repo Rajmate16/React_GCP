@@ -57,6 +57,10 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: 'us-east-1'  # Specify your AWS region
       run: |
-        amplify hosting add 
+        amplify hosting add --headless --amplify '{ "projectName": "your-app-name", "envName": "prod", "defaultEditor": "code" }' --yes
         amplify push
         amplify publish --yes  # Push the changes to AWS Amplify
+
+
+
+

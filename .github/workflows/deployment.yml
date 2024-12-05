@@ -1,110 +1,39 @@
-name: "List, Test, Build, then Deploy to AWS Amplify"
+name: Deploy React App to AWS Amplify
+
 on:
   push:
-    branches:    
-      # Push events on main branch
-      - main
+    branches:
+      - main  # Trigger on push to the main branch
 
 jobs:
-    build:
-        name: build and deploy
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                node-version: [16.x]
-                aws-region: [us-east-1]
-                aws-env: [staging]
-        steps:
-            - uses: actions/checkout@v1
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-            - name: use node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v1
-              with:
-                  node-version: ${{ matrix.node-version }}
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # Specify the Node.js version
 
-            - name: Use Node.js
-              uses: actions/setup-node@v2
-              with:
-                node-version: '16.x'
-      
-            - name: Install Amplify CLI
-              run: npm install -g @aws-amplify/cli@latest
-      
-            - name: Verify Amplify CLI Version
-              run: amplify --version
+    - name: Install dependencies
+      run: npm install
 
+    - name: Build React app
+      run: npm run build
 
-            - name: Verify Amplify CLI Version
-              run: amplify --version  # Verify Amplify CLI version
-      
-            - name: Install dependencies
-              run: yarn install  # Install project dependencies
-      
-            - name: Lint
-              run: yarn lint  # Lint the code
-      
-            - name: Test
-              run: yarn test:ci  # Run tests
-              env:
-                CI: true
-      
-            - name: Build
-              run: yarn build  # Build the project  
-      
-            - name: Configure Amplify
-              run: |
-                mkdir -p amplify/.config
-                echo '{"projectPath": "./", "envName": "staging"}' > amplify/.config/local-env-info.json
-
-
-            - name: configure amplify
-              uses: ambientlight/amplify-cli-action@0.2.1
-              with:
-                  amplify_command: configure
-                  amplify_env: ${{ matrix.aws-env }}
-              env:
-                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  AWS_REGION: ${{ matrix.aws-region }}
-
-            - uses: actions/cache@v2
-              with:
-                  path: "**/node_modules"
-                  key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-
-            - name: Install JS dependencies
-              run: yarn install
-
-            - name: Lint
-              run: yarn lint
-
-            - name: Test
-              run: yarn test:ci
-              env:
-                  CI: true
-
-            - name: Build
-              run: yarn build
-
-            # - name: deploy
-            #   uses: ambientlight/amplify-cli-action@0.2.1
-            #   with:
-            #       amplify_command: publish
-            #       amplify_env: ${{ matrix.aws-env }}
-            #   env:
-            #       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            #       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            #       AWS_REGION: ${{ matrix.aws-region }}
-
-
-            - name: Deploy to Amplify
-              env:
-                AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                AWS_REGION: ${{ matrix.aws-region }}
-              run: |
-                aws amplify start-deployment \
-                    --app-id d2qb7yco17arcr \
-                    --branch-name main \
-                    --source build
-
+    - name: Deploy to AWS Amplify
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: 'us-east-1'  # Specify your AWS region
+        AMPLIFY_APP_ID: ${{ secrets.AMPLIFY_APP_ID }}
+        AMPLIFY_BRANCH: 'main'  # Specify the Amplify branch
+      run: |
+        curl -sL https://aws-amplify.github.io/amplify-cli/installer | bash
+        export PATH=$PATH:/root/.npm-global/bin
+        amplify --version
+        amplify status
+        amplify push --yes

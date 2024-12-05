@@ -57,4 +57,4 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: 'us-east-1'  # Specify your AWS region
       run: |
-        amplify push --yes  # Push the changes to AWS Amplify
+        amplify publish --yes  # Push the changes to AWS Amplify

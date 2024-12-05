@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -38,18 +38,23 @@ jobs:
         aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
         aws configure set region $AWS_REGION
 
-    - name: Initialize Amplify Project (Headless)
+    - name: Create Amplify App with GitHub App
       run: |
-        amplify init --yes --headless --region $AWS_REGION --app ${{ secrets.AMPLIFY_APP_ID }} --env ${{ secrets.AMPLIFY_BRANCH }} --project-name your-app-name --default-editor code
+        aws amplify create-app --name NewApp \
+          --repository https://github.com/Rajmate16/React_GCP.git \
+          --access-token ${{ secrets.GIT_TOKEN }}
+
+    - name: Initialize Amplify Project
+      run: |
+        amplify init --yes --headless --region $AWS_REGION \
+          --project-name your-app-name \
+          --env prod \
+          --default-editor code
 
     - name: Deploy to AWS Amplify
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: 'us-east-1'  # Specify your AWS region
-        AMPLIFY_APP_ID: ${{ secrets.AMPLIFY_APP_ID }}
-        AMPLIFY_BRANCH: 'main'  # Specify the Amplify branch
       run: |
-        amplify --version  # Check if Amplify CLI is installed
-        amplify status  # Verify the status
         amplify push --yes  # Push the changes to AWS Amplify

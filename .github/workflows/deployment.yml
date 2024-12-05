@@ -59,7 +59,7 @@ jobs:
           --branch-name main \
           --job-type RELEASE \
           --source ${{ github.workspace }} \
-          --region ${{ secrets.AWS_REGION }}
+          --region us-east-1
 
     # - name: Deploy to AWS Amplify
     #   env:

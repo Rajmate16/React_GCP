@@ -1,4 +1,4 @@
-name: Deploy React App to AWS Amplify1
+name: Deploy React App to AWS Amplify
 
 on:
   push:
